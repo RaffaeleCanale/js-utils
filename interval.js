@@ -29,7 +29,7 @@ var Interval = function () {
         value: function start() {
             if (this.isRunning) return;
 
-            if (this.onstart) this.onstart();
+            if (this.onstart) this.onstart.apply(this, arguments);
 
             this.baseline = Date.now();
             this._tick();
@@ -39,7 +39,7 @@ var Interval = function () {
         value: function stop() {
             if (!this.isRunning) return;
 
-            if (this.onstop) this.onstop();
+            if (this.onstop) this.onstop.apply(this, arguments);
 
             clearTimeout(this.timer);
             this.timer = null;

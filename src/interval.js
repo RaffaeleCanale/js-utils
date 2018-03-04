@@ -13,19 +13,19 @@ export default class Interval {
         this.timer = null;
     }
 
-    start() {
+    start(...args) {
         if (this.isRunning) return;
 
-        if (this.onstart) this.onstart();
+        if (this.onstart) this.onstart(...args);
 
         this.baseline = Date.now();
         this._tick();
     }
 
-    stop() {
+    stop(...args) {
         if (!this.isRunning) return;
 
-        if (this.onstop) this.onstop();
+        if (this.onstop) this.onstop(...args);
 
         clearTimeout(this.timer);
         this.timer = null;
