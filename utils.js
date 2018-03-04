@@ -16,6 +16,12 @@ exports.getOrExec = getOrExec;
 exports.reverseLookup = reverseLookup;
 exports.prettyPrint = prettyPrint;
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function getRandomSample(arr, size) {
@@ -41,7 +47,7 @@ function getRandomSample(arr, size) {
 
 function filterAll(arr, filters) {
     return arr.filter(function (e) {
-        return _.every(filters, function (f) {
+        return _lodash2.default.every(filters, function (f) {
             return f(e);
         });
     });
@@ -54,11 +60,11 @@ function findBy(arr, element, field) {
 }
 
 function findIndex(arr, predicate) {
-    return _.findIndex(arr, predicate);
+    return _lodash2.default.findIndex(arr, predicate);
 }
 
 function findIndexBy(arr, element, field) {
-    return _.findIndex(arr, function (e) {
+    return _lodash2.default.findIndex(arr, function (e) {
         return e[field] === element[field];
     });
 }
@@ -79,14 +85,14 @@ function mod(n, m) {
 }
 
 function byteSize(data) {
-    if (_.isString(data)) {
+    if (_lodash2.default.isString(data)) {
         return Buffer.byteLength(data, 'utf8');
     }
     return data.byteLength;
 }
 
 function getOrExec(obj, args) {
-    if (_.isFunction(obj)) {
+    if (_lodash2.default.isFunction(obj)) {
         if (!args) {
             return obj();
         }
@@ -96,13 +102,13 @@ function getOrExec(obj, args) {
 }
 
 function reverseLookup(obj, field) {
-    return _.invert(obj)[field];
+    return _lodash2.default.invert(obj)[field];
 }
 
 function prettyPrint(value) {
-    if (_.isArray(value)) {
+    if (_lodash2.default.isArray(value)) {
         return '[' + value.map(prettyPrint).join(', ') + ']';
-    } else if (_.isPlainObject(value)) {
+    } else if (_lodash2.default.isPlainObject(value)) {
         return JSON.stringify(value);
     }
 

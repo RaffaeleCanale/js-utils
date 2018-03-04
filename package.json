@@ -1,6 +1,6 @@
 {
     "name": "js-utils",
-    "repository": "https://github.com/RaffaeleCanale/js-utils.git",
+    "repository": "github:RaffaeleCanale/js-utils",
     "version": "0.1.0",
     "description": "Collection of utility classes",
     "license": "MIT",

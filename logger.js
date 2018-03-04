@@ -9,6 +9,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 exports.setDefaults = setDefaults;
 exports.getLogger = getLogger;
 
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _chalk = require('chalk');
 
 var _chalk2 = _interopRequireDefault(_chalk);
@@ -40,7 +44,7 @@ var Logger = function () {
         _classCallCheck(this, Logger);
 
         this.name = name;
-        _.assign(this, _.defaults(options, defaultOptions));
+        _lodash2.default.assign(this, _lodash2.default.defaults(options, defaultOptions));
         this.levelIndex = this._getLevelIndex(this.level);
 
         this.levels.forEach(function (level) {
@@ -71,7 +75,7 @@ var Logger = function () {
     }, {
         key: '_getLevelIndex',
         value: function _getLevelIndex(level) {
-            var index = _.indexOf(this.levels, level);
+            var index = _lodash2.default.indexOf(this.levels, level);
             if (index < 0) {
                 throw new Error('Level ' + level + ' must be in ' + this.levels);
             }
@@ -84,7 +88,7 @@ var Logger = function () {
 }();
 
 function setDefaults(options) {
-    _.assign(defaultOptions, options);
+    _lodash2.default.assign(defaultOptions, options);
 }
 
 function getLogger(name, options) {
