@@ -9,7 +9,7 @@ export default class Interval {
 
     constructor(interval) {
         this.interval = interval;
-        this.baseline = undefined;
+        this.baseline = null;
         this.timer = null;
     }
 
@@ -18,8 +18,7 @@ export default class Interval {
 
         if (this.onstart) this.onstart(...args);
 
-        this.baseline = Date.now();
-        this._tick();
+        this._scheduleTick();
     }
 
     stop(...args) {
@@ -38,18 +37,28 @@ export default class Interval {
     _tick() {
         Promise.resolve(this.run())
             .finally(() => {
-                const now = Date.now();
-
-                while (this.baseline <= now) {
-                    this.baseline += this.interval;
+                if (this.isRunning) {
+                    this._scheduleTick();
                 }
-
-                const nextTick = this.baseline - now;
-                this.timer = setTimeout(() => {
-                    if (this.isRunning) {
-                        this._tick();
-                    }
-                }, nextTick);
             });
+    }
+
+    _scheduleTick() {
+        const now = Date.now();
+
+        if (this.baseline === null) {
+            this.baseline = now;
+        } else {
+            while (this.baseline <= now) {
+                this.baseline += this.interval;
+            }
+        }
+
+        const nextTick = this.baseline - now;
+        this.timer = setTimeout(() => {
+            if (this.isRunning) {
+                this._tick();
+            }
+        }, nextTick);
     }
 }

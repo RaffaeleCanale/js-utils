@@ -20,7 +20,7 @@ var Interval = function () {
         _classCallCheck(this, Interval);
 
         this.interval = interval;
-        this.baseline = undefined;
+        this.baseline = null;
         this.timer = null;
     }
 
@@ -31,8 +31,7 @@ var Interval = function () {
 
             if (this.onstart) this.onstart.apply(this, arguments);
 
-            this.baseline = Date.now();
-            this._tick();
+            this._scheduleTick();
         }
     }, {
         key: "stop",
@@ -50,19 +49,32 @@ var Interval = function () {
             var _this = this;
 
             Promise.resolve(this.run()).finally(function () {
-                var now = Date.now();
-
-                while (_this.baseline <= now) {
-                    _this.baseline += _this.interval;
+                if (_this.isRunning) {
+                    _this._scheduleTick();
                 }
-
-                var nextTick = _this.baseline - now;
-                _this.timer = setTimeout(function () {
-                    if (_this.isRunning) {
-                        _this._tick();
-                    }
-                }, nextTick);
             });
+        }
+    }, {
+        key: "_scheduleTick",
+        value: function _scheduleTick() {
+            var _this2 = this;
+
+            var now = Date.now();
+
+            if (this.baseline === null) {
+                this.baseline = now;
+            } else {
+                while (this.baseline <= now) {
+                    this.baseline += this.interval;
+                }
+            }
+
+            var nextTick = this.baseline - now;
+            this.timer = setTimeout(function () {
+                if (_this2.isRunning) {
+                    _this2._tick();
+                }
+            }, nextTick);
         }
     }, {
         key: "isRunning",
