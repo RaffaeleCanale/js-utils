@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import chalk from 'chalk';
 import { getOrExec, prettyPrint } from './utils';
 

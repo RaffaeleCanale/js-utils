@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export function getRandomSample(arr, size) {
     if (size >= arr.length) {
         return arr;
