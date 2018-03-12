@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-export function readJsonFile(file) {
+export function readJson(file) {
     return new Promise((resolve, reject) => {
         fs.readFile(file, 'utf8', (err, data) => {
             if (err) return reject(err);
