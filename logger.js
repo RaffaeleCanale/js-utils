@@ -37,6 +37,14 @@ var defaultOptions = {
     level: 'verbose'
 };
 
+function formatDate(date) {
+    var pad = function pad(num) {
+        var norm = Math.floor(Math.abs(num));
+        return (norm < 10 ? '0' : '') + norm;
+    };
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+}
+
 var Logger = function () {
     function Logger(name, options) {
         var _this = this;
@@ -65,7 +73,8 @@ var Logger = function () {
             }
 
             var info = {
-                timestamp: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+                // timestamp: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+                timestamp: formatDate(new Date()),
                 name: this.nameFormatter((0, _utils.getOrExec)(this.name)),
                 level: this.levelFormatter(level, levelIndex),
                 message: message.map(_utils.prettyPrint).join(' ')

@@ -19,6 +19,20 @@ const defaultOptions = {
     level: 'verbose',
 };
 
+function formatDate(date) {
+    const pad = (num) => {
+        const norm = Math.floor(Math.abs(num));
+        return (norm < 10 ? '0' : '') + norm;
+    };
+    return date.getFullYear() +
+        '-' + pad(date.getMonth() + 1) +
+        '-' + pad(date.getDate()) +
+        ' ' + pad(date.getHours()) +
+        ':' + pad(date.getMinutes()) +
+        ':' + pad(date.getSeconds());
+}
+
+
 class Logger {
 
     constructor(name, options) {
@@ -38,7 +52,8 @@ class Logger {
         }
 
         const info = {
-            timestamp: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+            // timestamp: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
+            timestamp: formatDate(new Date()),
             name: this.nameFormatter(getOrExec(this.name)),
             level: this.levelFormatter(level, levelIndex),
             message: message.map(prettyPrint).join(' '),
