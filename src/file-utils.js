@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
-export function readJson(file) {
+export function readJson(file, charset = 'utf8') {
     return new Promise((resolve, reject) => {
-        fs.readFile(file, 'utf8', (err, data) => {
+        fs.readFile(file, charset, (err, data) => {
             if (err) return reject(err);
 
             try {
@@ -15,13 +15,13 @@ export function readJson(file) {
     });
 }
 
-export function readJsonSync(file) {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
+export function readJsonSync(file, charset = 'utf8') {
+    return JSON.parse(fs.readFileSync(file, charset));
 }
 
-export function writeJson(file, data) {
+export function writeJson(file, data, charset = 'utf8') {
     return new Promise((resolve, reject) => {
-        fs.writeFile(file, data, 'utf8', (err) => {
+        fs.writeFile(file, data, charset, (err) => {
             if (err) return reject(err);
             return resolve();
         });
@@ -29,9 +29,9 @@ export function writeJson(file, data) {
 }
 
 
-export function readToArray(file) {
+export function readToArray(file, charset = 'utf8') {
     return new Promise((resolve, reject) => {
-        return fs.readFile(file, (err, data) => {
+        return fs.readFile(file, charset, (err, data) => {
             if (err) return reject(err);
 
             const array = data.toString().split('\r\n');
@@ -40,9 +40,9 @@ export function readToArray(file) {
     });
 }
 
-export function writeArray(file, array) {
+export function writeArray(file, array, charset = 'utf8') {
     return new Promise((resolve, reject) => {
-        fs.writeFile(file, array.join('\n'), 'utf8', (err) => {
+        fs.writeFile(file, array.join('\n'), charset, (err) => {
             if (err) return reject(err);
             return resolve();
         });

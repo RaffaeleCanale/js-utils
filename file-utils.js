@@ -21,8 +21,10 @@ var _path2 = _interopRequireDefault(_path);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function readJson(file) {
+    var charset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'utf8';
+
     return new Promise(function (resolve, reject) {
-        _fs2.default.readFile(file, 'utf8', function (err, data) {
+        _fs2.default.readFile(file, charset, function (err, data) {
             if (err) return reject(err);
 
             try {
@@ -35,12 +37,16 @@ function readJson(file) {
 }
 
 function readJsonSync(file) {
-    return JSON.parse(_fs2.default.readFileSync(file, 'utf8'));
+    var charset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'utf8';
+
+    return JSON.parse(_fs2.default.readFileSync(file, charset));
 }
 
 function writeJson(file, data) {
+    var charset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'utf8';
+
     return new Promise(function (resolve, reject) {
-        _fs2.default.writeFile(file, data, 'utf8', function (err) {
+        _fs2.default.writeFile(file, data, charset, function (err) {
             if (err) return reject(err);
             return resolve();
         });
@@ -48,8 +54,10 @@ function writeJson(file, data) {
 }
 
 function readToArray(file) {
+    var charset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'utf8';
+
     return new Promise(function (resolve, reject) {
-        return _fs2.default.readFile(file, function (err, data) {
+        return _fs2.default.readFile(file, charset, function (err, data) {
             if (err) return reject(err);
 
             var array = data.toString().split('\r\n');
@@ -59,8 +67,10 @@ function readToArray(file) {
 }
 
 function writeArray(file, array) {
+    var charset = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'utf8';
+
     return new Promise(function (resolve, reject) {
-        _fs2.default.writeFile(file, array.join('\n'), 'utf8', function (err) {
+        _fs2.default.writeFile(file, array.join('\n'), charset, function (err) {
             if (err) return reject(err);
             return resolve();
         });
