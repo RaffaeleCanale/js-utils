@@ -1,4 +1,5 @@
 import DefaultLogger from './logger';
+import _ from 'lodash';
 
 export default class {
 
