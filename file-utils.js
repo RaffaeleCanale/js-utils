@@ -55,12 +55,13 @@ function writeJson(file, data) {
 
 function readToArray(file) {
     var charset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'utf8';
+    var cr = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '\n';
 
     return new Promise(function (resolve, reject) {
         return _fs2.default.readFile(file, charset, function (err, data) {
             if (err) return reject(err);
 
-            var array = data.toString().split('\r\n');
+            var array = data.toString().split(cr);
             return resolve(array);
         });
     });

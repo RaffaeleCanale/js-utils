@@ -29,12 +29,12 @@ export function writeJson(file, data, charset = 'utf8') {
 }
 
 
-export function readToArray(file, charset = 'utf8') {
+export function readToArray(file, charset = 'utf8', cr = '\n') {
     return new Promise((resolve, reject) => {
         return fs.readFile(file, charset, (err, data) => {
             if (err) return reject(err);
 
-            const array = data.toString().split('\r\n');
+            const array = data.toString().split(cr);
             return resolve(array);
         });
     });
