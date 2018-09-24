@@ -15,6 +15,18 @@ export function readJson(file, charset = 'utf8') {
     });
 }
 
+export function readDir(directory, extensionFilter = '') {
+    return new Promise((resolve, reject) => {
+        fs.readdir(directory, (err, data) => {
+            if (err) return reject(err);
+
+            return resolve(data
+                .filter(f => f.endsWith(extensionFilter))
+                .map(f => path.join(directory, f)));
+        });
+    });
+}
+
 export function readJsonSync(file, charset = 'utf8') {
     return JSON.parse(fs.readFileSync(file, charset));
 }

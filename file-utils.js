@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.readJson = readJson;
+exports.readDir = readDir;
 exports.readJsonSync = readJsonSync;
 exports.writeJson = writeJson;
 exports.readToArray = readToArray;
@@ -32,6 +33,22 @@ function readJson(file) {
             } catch (e) {
                 return reject(new Error('Cannot JSON parse data: ' + e));
             }
+        });
+    });
+}
+
+function readDir(directory) {
+    var extensionFilter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+    return new Promise(function (resolve, reject) {
+        _fs2.default.readdir(directory, function (err, data) {
+            if (err) return reject(err);
+
+            return resolve(data.filter(function (f) {
+                return f.endsWith(extensionFilter);
+            }).map(function (f) {
+                return _path2.default.join(directory, f);
+            }));
         });
     });
 }
