@@ -21,7 +21,7 @@ export function readDir(directory, extensionFilter = '') {
             if (err) return reject(err);
 
             return resolve(data
-                .filter(f => f.endsWith(extensionFilter))
+                .filter(f => f.toLocaleLowerCase().endsWith(extensionFilter.toLowerCase()))
                 .map(f => path.join(directory, f)));
         });
     });

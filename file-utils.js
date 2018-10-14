@@ -45,7 +45,7 @@ function readDir(directory) {
             if (err) return reject(err);
 
             return resolve(data.filter(function (f) {
-                return f.endsWith(extensionFilter);
+                return f.toLocaleLowerCase().endsWith(extensionFilter.toLowerCase());
             }).map(function (f) {
                 return _path2.default.join(directory, f);
             }));
