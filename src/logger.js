@@ -19,6 +19,7 @@ const defaultLevels = [
 
 const defaultTransport = {
     log: console.log,
+    processMessage: (...message) => message.map(prettyPrint).join(' '),
     dateFormatter: formatDate,
     messageFormatter: info => `${info.timestamp} ${info.level} [${info.name}] - ${info.message}`,
     levelFormatter: (level, index) => {
@@ -56,7 +57,7 @@ class Logger {
                 timestamp: transport.dateFormatter(new Date()),
                 name: transport.nameFormatter(getOrExec(this.name)),
                 level: transport.levelFormatter(level, levelIndex),
-                message: message.map(prettyPrint).join(' '),
+                message: transport.processMessage(...message),
             };
             transport.log(this.messageFormatter(info));
         });

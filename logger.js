@@ -35,6 +35,13 @@ var defaultLevels = ['verbose', 'info', 'warn', 'error'];
 
 var defaultTransport = {
     log: console.log,
+    processMessage: function processMessage() {
+        for (var _len = arguments.length, message = Array(_len), _key = 0; _key < _len; _key++) {
+            message[_key] = arguments[_key];
+        }
+
+        return message.map(_utils.prettyPrint).join(' ');
+    },
     dateFormatter: formatDate,
     messageFormatter: function messageFormatter(info) {
         return info.timestamp + ' ' + info.level + ' [' + info.name + '] - ' + info.message;
@@ -71,8 +78,8 @@ var Logger = function () {
         value: function log(level) {
             var _this2 = this;
 
-            for (var _len = arguments.length, message = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                message[_key - 1] = arguments[_key];
+            for (var _len2 = arguments.length, message = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                message[_key2 - 1] = arguments[_key2];
             }
 
             var levelIndex = this._getLevelIndex(level);
@@ -85,7 +92,7 @@ var Logger = function () {
                     timestamp: transport.dateFormatter(new Date()),
                     name: transport.nameFormatter((0, _utils.getOrExec)(_this2.name)),
                     level: transport.levelFormatter(level, levelIndex),
-                    message: message.map(_utils.prettyPrint).join(' ')
+                    message: transport.processMessage.apply(transport, message)
                 };
                 transport.log(_this2.messageFormatter(info));
             });
