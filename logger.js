@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-exports.setDefaults = setDefaults;
+exports.setDefaultTransports = setDefaultTransports;
 exports.getLogger = getLogger;
 
 var _lodash = require('lodash');
@@ -23,9 +23,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var defaultOptions = {
-    transport: console,
-    levels: ['verbose', 'info', 'warn', 'error'],
+function formatDate(date) {
+    var pad = function pad(num) {
+        var norm = Math.floor(Math.abs(num));
+        return (norm < 10 ? '0' : '') + norm;
+    };
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
+}
+
+var defaultLevels = ['verbose', 'info', 'warn', 'error'];
+
+var defaultTransport = {
+    log: console.log,
+    dateFormatter: formatDate,
     messageFormatter: function messageFormatter(info) {
         return info.timestamp + ' ' + info.level + ' [' + info.name + '] - ' + info.message;
     },
@@ -37,25 +47,21 @@ var defaultOptions = {
     level: 'verbose'
 };
 
-function formatDate(date) {
-    var pad = function pad(num) {
-        var norm = Math.floor(Math.abs(num));
-        return (norm < 10 ? '0' : '') + norm;
-    };
-    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate()) + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds());
-}
-
 var Logger = function () {
-    function Logger(name, options) {
+    function Logger(name, transports, levels) {
         var _this = this;
 
         _classCallCheck(this, Logger);
 
+        this.levels = levels || defaultLevels;
         this.name = name;
-        _lodash2.default.assign(this, _lodash2.default.defaults(options, defaultOptions));
-        this.levelIndex = this._getLevelIndex(this.level);
+        this.transports = transports.map(function (transport) {
+            var options = _lodash2.default.defaults(transport, defaultTransport);
+            options.levelIndex = _this._getLevelIndex(options.level);
+            return options;
+        });
 
-        this.levels.forEach(function (level) {
+        levels.forEach(function (level) {
             _this[level] = _this.log.bind(_this, level);
         });
     }
@@ -63,23 +69,26 @@ var Logger = function () {
     _createClass(Logger, [{
         key: 'log',
         value: function log(level) {
-            var levelIndex = this._getLevelIndex(level);
-            if (levelIndex < this.levelIndex) {
-                return;
-            }
+            var _this2 = this;
 
             for (var _len = arguments.length, message = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                 message[_key - 1] = arguments[_key];
             }
 
-            var info = {
-                // timestamp: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
-                timestamp: formatDate(new Date()),
-                name: this.nameFormatter((0, _utils.getOrExec)(this.name)),
-                level: this.levelFormatter(level, levelIndex),
-                message: message.map(_utils.prettyPrint).join(' ')
-            };
-            this.transport.log(this.messageFormatter(info));
+            var levelIndex = this._getLevelIndex(level);
+            if (levelIndex < this.levelIndex) {
+                return;
+            }
+
+            this.transports.forEach(function (transport) {
+                var info = {
+                    timestamp: transport.dateFormatter(new Date()),
+                    name: transport.nameFormatter((0, _utils.getOrExec)(_this2.name)),
+                    level: transport.levelFormatter(level, levelIndex),
+                    message: message.map(_utils.prettyPrint).join(' ')
+                };
+                transport.log(_this2.messageFormatter(info));
+            });
         }
     }, {
         key: '_getLevelIndex',
@@ -96,13 +105,14 @@ var Logger = function () {
     return Logger;
 }();
 
-function setDefaults(options) {
-    _lodash2.default.assign(defaultOptions, options);
+var globalTransports = [defaultTransport];
+
+function setDefaultTransports(transports) {
+    globalTransports = transports;
 }
 
-function getLogger(name, options) {
-    return new Logger(name, options);
+function getLogger(name, transports, levels) {
+    return new Logger(name, transports || globalTransports, levels || defaultLevels);
 }
 
-var defaultLogger = new Logger('logger', defaultOptions);
-exports.default = defaultLogger;
+exports.default = Logger;

@@ -2,14 +2,24 @@ import _ from 'lodash';
 import chalk from 'chalk';
 import { getOrExec, prettyPrint } from './utils';
 
-const defaultOptions = {
-    transport: console,
-    levels: [
-        'verbose',
-        'info',
-        'warn',
-        'error',
-    ],
+function formatDate(date) {
+    const pad = (num) => {
+        const norm = Math.floor(Math.abs(num));
+        return (norm < 10 ? '0' : '') + norm;
+    };
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+const defaultLevels = [
+    'verbose',
+    'info',
+    'warn',
+    'error',
+];
+
+const defaultTransport = {
+    log: console.log,
+    dateFormatter: formatDate,
     messageFormatter: info => `${info.timestamp} ${info.level} [${info.name}] - ${info.message}`,
     levelFormatter: (level, index) => {
         const color = [chalk.cyan, chalk.green, chalk.yellow, chalk.red][index] || chalk.white;
@@ -19,28 +29,18 @@ const defaultOptions = {
     level: 'verbose',
 };
 
-function formatDate(date) {
-    const pad = (num) => {
-        const norm = Math.floor(Math.abs(num));
-        return (norm < 10 ? '0' : '') + norm;
-    };
-    return date.getFullYear() +
-        '-' + pad(date.getMonth() + 1) +
-        '-' + pad(date.getDate()) +
-        ' ' + pad(date.getHours()) +
-        ':' + pad(date.getMinutes()) +
-        ':' + pad(date.getSeconds());
-}
-
-
 class Logger {
 
-    constructor(name, options) {
+    constructor(name, transports, levels) {
+        this.levels = levels || defaultLevels;
         this.name = name;
-        _.assign(this, _.defaults(options, defaultOptions));
-        this.levelIndex = this._getLevelIndex(this.level);
+        this.transports = transports.map((transport) => {
+            const options = _.defaults(transport, defaultTransport);
+            options.levelIndex = this._getLevelIndex(options.level);
+            return options;
+        });
 
-        this.levels.forEach((level) => {
+        levels.forEach((level) => {
             this[level] = this.log.bind(this, level);
         });
     }
@@ -51,14 +51,15 @@ class Logger {
             return;
         }
 
-        const info = {
-            // timestamp: new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''),
-            timestamp: formatDate(new Date()),
-            name: this.nameFormatter(getOrExec(this.name)),
-            level: this.levelFormatter(level, levelIndex),
-            message: message.map(prettyPrint).join(' '),
-        };
-        this.transport.log(this.messageFormatter(info));
+        this.transports.forEach((transport) => {
+            const info = {
+                timestamp: transport.dateFormatter(new Date()),
+                name: transport.nameFormatter(getOrExec(this.name)),
+                level: transport.levelFormatter(level, levelIndex),
+                message: message.map(prettyPrint).join(' '),
+            };
+            transport.log(this.messageFormatter(info));
+        });
     }
 
     _getLevelIndex(level) {
@@ -71,13 +72,14 @@ class Logger {
     }
 }
 
-export function setDefaults(options) {
-    _.assign(defaultOptions, options);
+let globalTransports = [defaultTransport];
+
+export function setDefaultTransports(transports) {
+    globalTransports = transports;
 }
 
-export function getLogger(name, options) {
-    return new Logger(name, options);
+export function getLogger(name, transports, levels) {
+    return new Logger(name, transports || globalTransports, levels || defaultLevels);
 }
 
-const defaultLogger = new Logger('logger', defaultOptions);
-export default defaultLogger;
+export default Logger;
