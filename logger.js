@@ -94,7 +94,7 @@ var Logger = function () {
                     level: transport.levelFormatter(level, levelIndex),
                     message: transport.processMessage.apply(transport, message)
                 };
-                transport.log(_this2.messageFormatter(info));
+                transport.log(transport.messageFormatter(info));
             });
         }
     }, {

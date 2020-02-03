@@ -59,7 +59,7 @@ class Logger {
                 level: transport.levelFormatter(level, levelIndex),
                 message: transport.processMessage(...message),
             };
-            transport.log(this.messageFormatter(info));
+            transport.log(transport.messageFormatter(info));
         });
     }
 
