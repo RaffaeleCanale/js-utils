@@ -83,11 +83,11 @@ var Logger = function () {
             }
 
             var levelIndex = this._getLevelIndex(level);
-            if (levelIndex < this.levelIndex) {
-                return;
-            }
 
             this.transports.forEach(function (transport) {
+                if (levelIndex < transport.levelIndex) {
+                    return;
+                }
                 var info = {
                     timestamp: transport.dateFormatter(new Date()),
                     name: transport.nameFormatter((0, _utils.getOrExec)(_this2.name)),

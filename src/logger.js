@@ -48,11 +48,11 @@ class Logger {
 
     log(level, ...message) {
         const levelIndex = this._getLevelIndex(level);
-        if (levelIndex < this.levelIndex) {
-            return;
-        }
 
         this.transports.forEach((transport) => {
+            if (levelIndex < transport.levelIndex) {
+                return;
+            }
             const info = {
                 timestamp: transport.dateFormatter(new Date()),
                 name: transport.nameFormatter(getOrExec(this.name)),
